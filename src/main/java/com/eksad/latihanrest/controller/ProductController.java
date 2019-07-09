@@ -1,6 +1,7 @@
 package com.eksad.latihanrest.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,35 @@ public class ProductController {
 				return productDao.save(product);	
 			}
 			return null;
+		}
+		
+		@RequestMapping (value = "update/{id}", method = RequestMethod.PUT)
+		public Product update(@RequestBody Product product, @PathVariable Long id) {
+			Product productSelected = productDao.findById(id).orElse(null);
+			if (productSelected != null) {
+				productSelected.setBrandId(product.getBrandId());
+				productSelected.setName(product.getName());
+				productSelected.setPrice(product.getPrice());
+				
+				return productDao.save(productSelected);
+			}else {
+				return null;
+			}
+		}
+
+		@RequestMapping (value = "delete/{id}", method = RequestMethod.DELETE)
+		public HashMap<String, Object> delete(@PathVariable Long id){
+			HashMap<String, Object> result = new HashMap<String, Object>();
+			productDao.deleteById(id);
+			result.put("message", "berhasil dihapus");
+			return result;
+		}
+
+		@RequestMapping("getBySearch/{search}")
+		public List<Product> getBySearch(@PathVariable String search) {
+			List<Product> result = new ArrayList<Product>();
+			productDao.findBySearch(search).forEach(result::add);
+			return  result;
 		}
 		
 }
